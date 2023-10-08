@@ -1,28 +1,41 @@
 // hashmaps3.rs
-
-// A list of scores (one per line) of a soccer match is given. Each line
-// is of the form :
-// <team_1_name>,<team_2_name>,<team_1_goals>,<team_2_goals>
+//
+// A list of scores (one per line) of a soccer match is given. Each line is of
+// the form : "<team_1_name>,<team_2_name>,<team_1_goals>,<team_2_goals>"
 // Example: England,France,4,2 (England scored 4 goals, France 2).
-
-// You have to build a scores table containing the name of the team, goals
-// the team scored, and goals the team conceded. One approach to build
-// the scores table is to use a Hashmap. The solution is partially
-// written to use a Hashmap, complete it to pass the test.
-
+//
+// You have to build a scores table containing the name of the team, goals the
+// team scored, and goals the team conceded. One approach to build the scores
+// table is to use a Hashmap. The solution is partially written to use a
+// Hashmap, complete it to pass the test.
+//
 // Make me pass the tests!
+//
+// Execute `rustlings hint hashmaps3` or use the `hint` watch subcommand for a
+// hint.
 
-// Execute `rustlings hint hashmaps3` or use the `hint` watch subcommand for a hint.
-
-// I AM NOT DONE
 
 use std::collections::HashMap;
 
-// A structure to store team name and its goal details.
+// A structure to store the goal details of a team.
+#[derive(Debug)]
 struct Team {
-    name: String,
     goals_scored: u8,
     goals_conceded: u8,
+}
+
+fn insert_to_hashmap(map: &mut HashMap<String, Team>, name: String, score: Team) {
+    let value = map.get(&name);
+    if value.is_none() {
+        map.insert(name, score);
+    } else {
+        // println!("{:?}", value.unwrap());
+        let value = value.unwrap();
+        map.insert(name, Team {
+            goals_scored: value.goals_scored + score.goals_scored,
+            goals_conceded: value.goals_conceded + score.goals_conceded,
+        });
+    }
 }
 
 fn build_scores_table(results: String) -> HashMap<String, Team> {
@@ -37,9 +50,11 @@ fn build_scores_table(results: String) -> HashMap<String, Team> {
         let team_2_score: u8 = v[3].parse().unwrap();
         // TODO: Populate the scores table with details extracted from the
         // current line. Keep in mind that goals scored by team_1
-        // will be number of goals conceded from team_2, and similarly
+        // will be the number of goals conceded from team_2, and similarly
         // goals scored by team_2 will be the number of goals conceded by
         // team_1.
+        insert_to_hashmap(&mut scores, team_1_name, Team {goals_scored: team_1_score, goals_conceded: team_2_score});
+        insert_to_hashmap(&mut scores, team_2_name, Team {goals_scored: team_2_score, goals_conceded: team_1_score});
     }
     scores
 }
